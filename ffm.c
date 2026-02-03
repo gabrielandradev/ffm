@@ -153,6 +153,9 @@ struct FILE_LIST get_files_in_directory(const char *dirpath) {
                 if (strcmp(dp->d_name, ".") == 0)
                         continue;
 
+                if (strcmp(dp->d_name, "..") == 0)
+                        continue;
+
                 if (ensure_list_capacity(&fl, &capacity) == -1) {
                         free(fl.files);
                         closedir(dirp);
@@ -275,7 +278,7 @@ int main(int argc, char *argv[]) {
         MENU *menu;
         char current_dir[PATH_MAX];
         int current_sort;
-        int should_reload;
+        bool should_reload;
         struct FILE_ENTRY curr_file;
 
         current_sort = ALPHABETICAL;
@@ -317,10 +320,16 @@ int main(int argc, char *argv[]) {
                 case KEY_UP:
                         menu_driver(menu, REQ_UP_ITEM);
                         break;
+                case KEY_LEFT:
+                        strncpy(current_dir, "..", 3);
+                        should_reload = true;
+                        break;
 
+                case KEY_RIGHT:
                 case ENTER:
                         curr_file = get_item_file(current_item(menu));
-                        if (curr_file.type == DT_DIR || curr_file.type == DT_LNK) {
+                        if (curr_file.type == DT_DIR ||
+                            curr_file.type == DT_LNK) {
                                 strncpy(current_dir, curr_file.path, PATH_MAX);
                                 should_reload = true;
                         }
