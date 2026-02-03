@@ -252,6 +252,8 @@ void load_directory_menu(const char *target_path, MENU **menu, ITEM ***items,
                 break;
         }
 
+        mvprintw(LINES - 4, 0, "File count: %d", fl->filecount);
+
         *items = create_curses_file_items(fl);
         *menu = new_menu(*items);
         post_menu(*menu);
